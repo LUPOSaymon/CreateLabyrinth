@@ -35,7 +35,7 @@ public class Main
                         int green = (rgb & 0x0000ff00) >> 8;
                         int blue = rgb & 0x000000ff;
 
-                        if (red == 0 && green == 0 && blue == 0)
+                        if (red == 255 && green == 255 && blue == 255)
                             myWriter.write("    m[" + y + "][" + x + "] = false;\n");
                         else
                             myWriter.write("    m[" + y + "][" + x + "] = true;\n");
