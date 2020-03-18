@@ -5,31 +5,37 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Scanner;
+
+
 public class Main
 {
+    public static final String RESET = "\033[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RED = "\u001B[31m";
 
     public static void main(String[] args)
     {
 
-        Scanner scanner = new Scanner(System.in);
-        String imageName = "";
-        while(true) {
-            System.out.println("Inserisci il nome dell'immagine caricata nella cartella Images(senza estensione) (scrivere .exit per terminare l'esecuzione):");
-            imageName = scanner.next();
-            if (imageName.equals(".exit"))
-                break;
-            String fileName = "Images/" + imageName + ".png";
+        File folder = new File("Images");
 
+        try
+        {
+            for (final File fileEntry : folder.listFiles())
+            {
+                String fileName = fileEntry.getName();
+                System.out.println("Convertendo il file " + fileName+ "...");
+                BufferedImage image = ImageIO.read(fileEntry);
 
-            try {
-                BufferedImage image = ImageIO.read(new File(fileName));
+                String imageName = fileName.substring(0,fileName.length()-4);
                 int dimensions = image.getHeight();
                 FileWriter myWriter = new FileWriter("Files/" + imageName + ".txt");
                 myWriter.write("public static final int DIMENSIONE = " + dimensions + ";\n" +
                         "public static boolean[][] mkStruct (int d){\n" +
                         "   boolean[][] m = new boolean[d][d];{\n");
-                for (int y = 0; y < image.getHeight(); y++) {
-                    for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++)
+                {
+                    for (int x = 0; x < image.getWidth(); x++)
+                    {
                         int rgb = image.getRGB(x, y);
                         int red = (rgb & 0x00ff0000) >> 16;
                         int green = (rgb & 0x0000ff00) >> 8;
@@ -39,16 +45,16 @@ public class Main
                             myWriter.write("    m[" + y + "][" + x + "] = false;\n");
                         else
                             myWriter.write("    m[" + y + "][" + x + "] = true;\n");
-
                     }
                 }
                 myWriter.write("    }return m;\n" +
                         "}");
                 myWriter.close();
-                System.out.println("File creato con successo :D");
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
+                System.out.println(Main.ANSI_GREEN + "File " + imageName + ".txt creato con successo :D" + Main.RESET);
             }
+        } catch (IOException e)
+        {
+            System.out.println(Main.ANSI_RED + e.getMessage() + Main.RESET);
         }
     }
 }
